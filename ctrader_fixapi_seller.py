@@ -91,7 +91,7 @@ class FixApi():
     def connect_to_serv(self):
         """Выполняет подключение к серверу и создание socket клиента"""
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.settimeout(10)
+        self.sock.settimeout(5)
         try:
             self.sock.connect((self.host, self.port))
         except:
@@ -128,7 +128,7 @@ class FixApi():
         """Выполняет подключение к потоку"""
 
         request = self.create_request(
-            message={57: 'TRADE', 98: 0, 108: 30, 141: 'Y', 553: username,
+            message={57: 'TRADE', 98: 0, 108: 0, 141: 'Y', 553: username,
                      554: password},
             message_type='A',
         )
@@ -157,15 +157,23 @@ class FixApi():
     ):
         """Создаёт и возвращает сообщение для одиночного ордера по правилам
             fix api"""
-        side = '1' if action == 'buy' else '2'
-
-        if order_type.lower() == 'market':
-            order_type = 1
-        elif order_type.lower() == 'limit':
-            order_type = 2
+        order_type = order_type.lower()
+        action = action.lower()
+        if action == 'buy':
+            side = '1'
+        elif action == 'sell':
+            side = '2'
         else:
-            order_type = 3
+            side = 'ERROR'
 
+        if order_type == 'market':
+            order_type = 1
+        elif order_type == 'limit':
+            order_type = 2
+        elif order_type == 'stop':
+            order_type = 3
+        else:
+            order_type = 'ERROR'
         message = {
             11: order_id,
             55: symbol_id,
@@ -239,7 +247,7 @@ if __name__ == "__main__":
     fapi.connect_to_serv()
     fapi.execute_logon(3454732, 3454732)
     print(fapi.execute_create_order_req(order_id=876316397, symbol_id=1,
-                                        action='buy', qty=1000,
+                                        action='sell', qty=1000,
                                         order_type='stop', st_price=12313))
     fapi.execute_logout()
     fapi.disconnect_from_serv()

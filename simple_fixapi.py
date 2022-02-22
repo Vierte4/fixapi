@@ -47,10 +47,50 @@ class SimpleFixApi():
 
 if __name__ == "__main__":
     sapi = SimpleFixApi(demo1)
-    print(sapi.start_session())
+    sapi.start_session()
 
     print(sapi.send_order(
-        order_id=876316397,
+        order_id=122,
+        symbol_id=1,
+        action='buy',
+        qty=1000,
+        order_type='stop',
+        st_price=12313))
+
+    print(sapi.send_order(
+        order_id=123,
+        symbol_id=1,
+        action='buy',
+        qty=1000,
+        order_type='stop',
+        st_price=12313))
+
+    print(sapi.send_order(
+        order_id=124,
+        symbol_id=1,
+        action='buy',
+        qty=1000,
+        order_type='stop',
+        st_price=12313))
+
+    print(sapi.send_order(
+        order_id=125,
+        symbol_id=1,
+        action='buy',
+        qty=1000,
+        order_type='stop',
+        st_price=12313))
+
+    print(sapi.send_order(
+        order_id=126,
+        symbol_id=1,
+        action='buy',
+        qty=1000,
+        order_type='stop',
+        st_price=12313))
+
+    print(sapi.send_order(
+        order_id=127,
         symbol_id=1,
         action='buy',
         qty=1000,
