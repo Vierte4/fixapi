@@ -90,6 +90,7 @@ class FixApi():
 
     def connect_to_serv(self):
         """Выполняет подключение к серверу и создание socket клиента"""
+
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.settimeout(5)
         try:
@@ -109,9 +110,9 @@ class FixApi():
         try:
             self.sock.send(message)
             response = self.sock.recv(65535).decode()
-        except:
-            self.logger.info('Превышено время ожидания ответа от сервера')
-            return 'Превышено время ожидания ответа от сервера'
+        except Exception as e:
+            self.logger.info(e)
+            return e
         formated_response = self.parse_fix_message(response)
 
         if not formated_response:
@@ -203,6 +204,7 @@ class FixApi():
         '''Создаёт и отправляет запрос на logon. Возвращает ответ'''
         request = self.create_logon_req(username, password)
         response = self.send_to_serv(message=request, message_type='Logon')
+        self.msgSeqNum = 2
         return response
 
     def execute_logout(self):

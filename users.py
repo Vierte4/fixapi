@@ -1,25 +1,25 @@
 class User():
     def __init__(
-		self, 
-        senderCompID, 
-        targetCompID, 
-        host, 
-        port,
-        username,
-        password,
-        fixversion='FIX.4.4',
+            self,
+            senderCompID,
+            targetCompID,
+            host,
+            port,
+            username,
+            password,
+            fixversion='FIX.4.4',
     ):
-        self.senderCompID=senderCompID
-        self.targetCompID=targetCompID
-        self.host=host
-        self.port=port
-        self.fixversion=fixversion
-        self.username=username
-        self.password=password
+        self.senderCompID = senderCompID
+        self.targetCompID = targetCompID
+        self.host = host
+        self.port = port
+        self.fixversion = fixversion
+        self.username = username
+        self.password = password
 
 
 demo1 = User(
-	senderCompID='demo.ctrader.3454732',
+    senderCompID='demo.ctrader.3454732',
     targetCompID='CSERVER',
     host='h28.p.ctrader.com',
     port=5202,

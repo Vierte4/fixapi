@@ -29,6 +29,17 @@ class FixApiTest_execute_positive(TestCase):
         fapi.execute_logout()
         fapi.disconnect_from_serv()
 
+    def test_execute_logout(self):
+        fapi.connect_to_serv()
+
+        fapi.execute_logon(3454732, 3454732)
+        resp = fapi.execute_logout()
+        self.assertTrue(type(resp) is dict)
+        value_of_error = resp.get('58')
+        self.assertIsNone(value_of_error)
+
+        fapi.disconnect_from_serv()
+
     def test_send_to_serv(self):
         fapi.connect_to_serv()
         fapi.execute_logon(3454732, 3454732)

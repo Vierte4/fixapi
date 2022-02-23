@@ -33,8 +33,9 @@ class SimpleFixApi():
             price='Market',  # указывать только при order_type = limit
             st_price='None'  # указывать только при order_type = stop
     ):
-        '''Формирует и отправляет ордер на сервер. Возвращает ответ'''
-        return self.fixApi.execute_create_order_req(
+        '''Формирует и отправляет ордер на сервер. Возвращает ответ. Если ответ
+            не был получен, пытается заново подключиться к серву и залогиниться'''
+        response = self.fixApi.execute_create_order_req(
             order_id,  # id заявки
             symbol_id,  # id символа
             action,  # buy или sell
@@ -43,6 +44,21 @@ class SimpleFixApi():
             price,  # указывать только при order_type = limit
             st_price  # указывать только при order_type = stop
         )
+
+        if type(response) is dict:
+            return response
+        else:
+            self.fixApi.connect_to_serv()
+            self.fixApi.execute_logon(self.user.username, self.user.password)
+            return self.fixApi.execute_create_order_req(
+                order_id,  # id заявки
+                symbol_id,  # id символа
+                action,  # buy или sell
+                qty,  # количество
+                order_type,  # market, limit или stop
+                price,  # указывать только при order_type = limit
+                st_price  # указывать только при order_type = stop
+            )
 
 
 if __name__ == "__main__":
