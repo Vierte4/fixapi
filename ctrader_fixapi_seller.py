@@ -111,6 +111,7 @@ class FixApi():
             self.sock.send(message)
             response = self.sock.recv(65535).decode()
         except Exception as e:
+            e = f'Exception: {e}'
             self.logger.info(e)
             return e
         formated_response = self.parse_fix_message(response)

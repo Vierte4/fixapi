@@ -8,17 +8,9 @@ class SimpleFixApiTest_positive(TestCase):
 
     def test_start_session(self):
         sapi = SimpleFixApi(demo1)
-        sapi.start_session()
+        resp = sapi.start_session()
 
-        resp = sapi.send_order(
-            order_id=122,
-            symbol_id=1,
-            action='buy',
-            qty=1000,
-            order_type='stop',
-            st_price=12313)
-
-        self.assertTrue(resp)
+        self.assertEqual(resp, 'Вход выполнен успешно')
         sapi.end_session()
 
     def test_end_session(self):
@@ -85,6 +77,23 @@ class SimpleFixApiTest_positive(TestCase):
 
 class SimpleFixApiTest_negative(TestCase):
 
+    def test_start_session_negative_user(self):
+        sapi = SimpleFixApi(demo1)
+        sapi.user.password = 11111
+        resp = sapi.start_session()
+
+        sapi.end_session()
+
+        self.assertEqual(resp, 'Неправильные логин и/или пароль')
+
+
+    def test_start_session_negative_host(self):
+        sapi = SimpleFixApi(demo1)
+        sapi.fixApi.host = 111
+        resp = sapi.start_session()
+        sapi.end_session()
+        self.assertEqual(resp, 'Сервер не отвечает')
+
     def test_send_market_order_negative(self):
         sapi = SimpleFixApi(demo1)
         sapi.start_session()
@@ -137,6 +146,7 @@ class SimpleFixApiTest_negative(TestCase):
         self.assertIsNotNone(value_of_error)
 
         sapi.end_session()
+
 
 
 if __name__ == '__main__':

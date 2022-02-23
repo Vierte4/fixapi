@@ -1,10 +1,10 @@
+from copy import deepcopy
 from ctrader_fixapi_seller import FixApi
 from users import User, demo1
 
-
 class SimpleFixApi():
     def __init__(self, user: User):
-        self.user = user
+        self.user = deepcopy(user)
 
         self.fixApi = FixApi(
             senderCompID=user.senderCompID,
@@ -16,7 +16,16 @@ class SimpleFixApi():
         '''Запускает логгинг, создаёт соединение с сервером и логинится'''
         self.fixApi.start_logging()
         self.fixApi.connect_to_serv()
-        self.fixApi.execute_logon(self.user.username, self.user.password)
+        resp = self.fixApi.execute_logon(self.user.username, self.user.password)
+
+        if type(resp) is str:
+            return('Сервер не отвечает')
+        elif type(resp) is dict:
+            error_value = resp.get('58')
+            if error_value:
+                return 'Неправильные логин и/или пароль'
+            else:
+                return 'Вход выполнен успешно'
 
     def end_session(self):
         '''Разлогинивается и отключает соединение с сервером'''
