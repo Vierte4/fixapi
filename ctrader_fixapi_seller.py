@@ -104,12 +104,14 @@ class FixApi():
     def send_to_serv(self, message, message_type):
         """Переводит message в биты, отправляет на сервер
             и возвращает ответ"""
+        print(message)
         message = str(message).replace("|", "\u0001")
         message = message.encode()
 
         try:
             self.sock.send(message)
             response = self.sock.recv(65535).decode()
+
         except Exception as e:
             e = f'Exception: {e}'
             self.logger.info(e)
@@ -238,27 +240,3 @@ class FixApi():
             message=request,
             message_type='Create Order')
         return response
-
-
-if __name__ == "__main__":
-    fapi = FixApi(
-        senderCompID='demo.ctrader.3454732',
-        targetCompID='CSERVER',
-        host='h28.p.ctrader.com',
-        port=5202)
-    fapi.start_logging()
-    fapi.connect_to_serv()
-    fapi.execute_logon(3454732, 3454732)
-    print(fapi.execute_create_order_req(order_id=876316397, symbol_id=1,
-                                        action='sell', qty=1000,
-                                        order_type='stop', st_price=12313))
-    fapi.execute_logout()
-    fapi.disconnect_from_serv()
-
-"""Имя хоста: h28.p.ctrader.com
-(ваш текущий IP-адрес 80.86.83.5 может быть изменен без предупреждения)
-Порт: 5212 (SSL), 5202 (обыкновенный текст).
-Пароль: (пароль счета 3454732)
-SenderCompID: demo.ctrader.3454732
-TargetCompID: CSERVER
-SenderSubID: TRADE"""

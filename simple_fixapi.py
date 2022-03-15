@@ -1,8 +1,11 @@
 from copy import deepcopy
+
 from ctrader_fixapi_seller import FixApi
 from users import User, demo1
 
+
 class SimpleFixApi():
+    # Тело бота-селлера для дачи основных команд.
     def __init__(self, user: User):
         self.user = deepcopy(user)
 
@@ -19,7 +22,7 @@ class SimpleFixApi():
         resp = self.fixApi.execute_logon(self.user.username, self.user.password)
 
         if type(resp) is str:
-            return('Сервер не отвечает')
+            return ('Сервер не отвечает')
         elif type(resp) is dict:
             error_value = resp.get('58')
             if error_value:

@@ -4,12 +4,10 @@ from simple_fixapi import SimpleFixApi
 from users import demo1
 
 
-class SimpleFixApiTest_positive(TestCase):
-
+class SimpleFixApiTest_StartEndSession_positive(TestCase):
     def test_start_session(self):
         sapi = SimpleFixApi(demo1)
         resp = sapi.start_session()
-
         self.assertEqual(resp, 'Вход выполнен успешно')
         sapi.end_session()
 
@@ -21,11 +19,35 @@ class SimpleFixApiTest_positive(TestCase):
         with self.assertRaises(Exception):
             sapi.fixApi.sock.send('ok'.encode())
 
-    def test_send_market_order(self):
-        sapi = SimpleFixApi(demo1)
-        sapi.start_session()
 
-        resp = sapi.send_order(
+class SimpleFixApiTest_StartEndSession_negative(TestCase):
+    def test_start_session_negative_user(self):
+        sapi = SimpleFixApi(demo1)
+        sapi.user.password = 11111
+        resp = sapi.start_session()
+
+        sapi.end_session()
+
+        self.assertEqual(resp, 'Неправильные логин и/или пароль')
+
+    def test_start_session_negative_host(self):
+        sapi = SimpleFixApi(demo1)
+        sapi.fixApi.host = 111
+        resp = sapi.start_session()
+        sapi.end_session()
+        self.assertEqual(resp, 'Сервер не отвечает')
+
+
+class SimpleFixApiTest_SendOrder_positive(TestCase):
+    def setUp(self):
+        self.sapi = SimpleFixApi(demo1)
+        self.sapi.start_session()
+
+    def tearDown(self):
+        self.sapi.end_session()
+
+    def test_send_MarketOrder(self):
+        resp = self.sapi.send_order(
             order_id=122,
             symbol_id=1,
             action='buy',
@@ -36,13 +58,8 @@ class SimpleFixApiTest_positive(TestCase):
         value_of_error = resp.get('58')
         self.assertIsNone(value_of_error)
 
-        sapi.end_session()
-
-    def test_send_limit_order(self):
-        sapi = SimpleFixApi(demo1)
-        sapi.start_session()
-
-        resp = sapi.send_order(
+    def test_send_LimitOrder(self):
+        resp = self.sapi.send_order(
             order_id=122,
             symbol_id=1,
             action='sell',
@@ -54,13 +71,8 @@ class SimpleFixApiTest_positive(TestCase):
         value_of_error = resp.get('58')
         self.assertIsNone(value_of_error)
 
-        sapi.end_session()
-
-    def test_send_stop_order(self):
-        sapi = SimpleFixApi(demo1)
-        sapi.start_session()
-
-        resp = sapi.send_order(
+    def test_send_StopOrder(self):
+        resp = self.sapi.send_order(
             order_id=122,
             symbol_id=1,
             action='buy',
@@ -72,33 +84,17 @@ class SimpleFixApiTest_positive(TestCase):
         value_of_error = resp.get('58')
         self.assertIsNone(value_of_error)
 
-        sapi.end_session()
-
 
 class SimpleFixApiTest_negative(TestCase):
+    def setUp(self):
+        self.sapi = SimpleFixApi(demo1)
+        self.sapi.start_session()
 
-    def test_start_session_negative_user(self):
-        sapi = SimpleFixApi(demo1)
-        sapi.user.password = 11111
-        resp = sapi.start_session()
-
-        sapi.end_session()
-
-        self.assertEqual(resp, 'Неправильные логин и/или пароль')
-
-
-    def test_start_session_negative_host(self):
-        sapi = SimpleFixApi(demo1)
-        sapi.fixApi.host = 111
-        resp = sapi.start_session()
-        sapi.end_session()
-        self.assertEqual(resp, 'Сервер не отвечает')
+    def tearDown(self):
+        self.sapi.end_session()
 
     def test_send_market_order_negative(self):
-        sapi = SimpleFixApi(demo1)
-        sapi.start_session()
-
-        resp = sapi.send_order(
+        resp = self.sapi.send_order(
             order_id=122,
             symbol_id='xxxx',
             action='sell',
@@ -109,13 +105,8 @@ class SimpleFixApiTest_negative(TestCase):
         value_of_error = resp.get('58')
         self.assertIsNotNone(value_of_error)
 
-        sapi.end_session()
-
     def test_send_limit_order_negative(self):
-        sapi = SimpleFixApi(demo1)
-        sapi.start_session()
-
-        resp = sapi.send_order(
+        resp = self.sapi.send_order(
             order_id=122,
             symbol_id=1,
             action='xxx',
@@ -127,13 +118,8 @@ class SimpleFixApiTest_negative(TestCase):
         value_of_error = resp.get('58')
         self.assertIsNotNone(value_of_error)
 
-        sapi.end_session()
-
     def test_send_stop_order_negative(self):
-        sapi = SimpleFixApi(demo1)
-        sapi.start_session()
-
-        resp = sapi.send_order(
+        resp = self.sapi.send_order(
             order_id=1,
             symbol_id='1',
             action='buy',
@@ -144,9 +130,6 @@ class SimpleFixApiTest_negative(TestCase):
         self.assertTrue(type(resp) is dict)
         value_of_error = resp.get('58')
         self.assertIsNotNone(value_of_error)
-
-        sapi.end_session()
-
 
 
 if __name__ == '__main__':
